@@ -2,34 +2,49 @@ grammar MiniSQL;
 
 program : statement+ EOF ;
 
-statement : selectStmt ';';
+statement : selectStmt ';' ;
 
-selectStmt: SELECT columnList FROM tableName (WHERE condition)?;
+selectStmt: SELECT columnList FROM tableName (WHERE condition)? ;
 
 columnList
-    : '*'                                # allColumns
-    | columnName (',' columnName)*      # specificColumns
+    : '*'                             # allColumns
+    | columnName (',' columnName)*   # specificColumns
     ;
 
-condition: expression comparator expression;
+condition
+    : condition OR andCond           # orCondition
+    | andCond                        # singleAnd
+    ;
 
-expression: columnName | literal;
+andCond
+    : andCond AND baseCond           # andCondition
+    | baseCond                       # singleBase
+    ;
 
-comparator: '=' | '!=' | '<' | '<=' | '>' | '>=';
+baseCond
+    : expression comparator expression  # baseCondition
+    ;
+
+expression: columnName | literal ;
+
+comparator: '=' | '!=' | '<' | '<=' | '>' | '>=' ;
 
 columnName : IDENTIFIER ;
 tableName  : IDENTIFIER ;
 literal    : STRING | NUMBER ;
 
-// Tokens
-SELECT  : 'SELECT' ;
-FROM    : 'FROM' ;  
-WHERE   : 'WHERE' ;
+// Keywords
+SELECT : 'SELECT' ;
+FROM   : 'FROM' ;
+WHERE  : 'WHERE' ;
+AND    : 'AND' ;
+OR     : 'OR' ;
 
+// Tokens
 IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]* ;
 NUMBER     : [0-9]+ ;
 STRING     : '\'' (~['\r\n])* '\'' ;
 
-// Ignore whitespace and comments
-WS : [ \t\r\n]+ -> skip ;
+// Whitespace and comments
+WS      : [ \t\r\n]+ -> skip ;
 COMMENT : '--' ~[\r\n]* -> skip ;

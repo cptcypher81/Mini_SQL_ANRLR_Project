@@ -10,28 +10,39 @@ def load_table(table_name):
         return []
 
 def evaluate_condition(row, condition):
-    left = condition['left']
-    op = condition['op']
-    right = condition['right']
+    if condition['type'] == 'condition':
+        left = condition['left']
+        op = condition['op']
+        right = condition['right']
 
-    # Convert right to number if it looks like a number
-    if right.isdigit():
-        right = int(right)
-    elif right.replace('.', '', 1).isdigit():
-        right = float(right)
-    elif right.startswith("'") and right.endswith("'"):
-        right = right[1:-1]
+        # Convert right value to int/float if numeric
+        if isinstance(right, str):
+            if right.isdigit():
+                right = int(right)
+            elif right.replace('.', '', 1).isdigit():
+                right = float(right)
+            elif right.startswith("'") and right.endswith("'"):
+                right = right[1:-1]
 
-    left_value = row.get(left)
+        left_value = row.get(left)
 
-    # Comparison
-    if op == '=': return left_value == right
-    if op == '!=': return left_value != right
-    if op == '<': return left_value < right
-    if op == '<=': return left_value <= right
-    if op == '>': return left_value > right
-    if op == '>=': return left_value >= right
+        # Apply comparison
+        if op == '=': return left_value == right
+        if op == '!=': return left_value != right
+        if op == '<': return left_value < right
+        if op == '<=': return left_value <= right
+        if op == '>': return left_value > right
+        if op == '>=': return left_value >= right
+        return False
+
+    elif condition['type'] == 'and':
+        return evaluate_condition(row, condition['left']) and evaluate_condition(row, condition['right'])
+
+    elif condition['type'] == 'or':
+        return evaluate_condition(row, condition['left']) or evaluate_condition(row, condition['right'])
+
     return False
+
 
 def run_query(query):
     if query['type'] != 'SELECT':

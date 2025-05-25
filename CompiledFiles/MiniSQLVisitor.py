@@ -34,8 +34,28 @@ class MiniSQLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MiniSQLParser#condition.
-    def visitCondition(self, ctx:MiniSQLParser.ConditionContext):
+    # Visit a parse tree produced by MiniSQLParser#orCondition.
+    def visitOrCondition(self, ctx:MiniSQLParser.OrConditionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#singleAnd.
+    def visitSingleAnd(self, ctx:MiniSQLParser.SingleAndContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#andCondition.
+    def visitAndCondition(self, ctx:MiniSQLParser.AndConditionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#singleBase.
+    def visitSingleBase(self, ctx:MiniSQLParser.SingleBaseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#baseCondition.
+    def visitBaseCondition(self, ctx:MiniSQLParser.BaseConditionContext):
         return self.visitChildren(ctx)
 
 
