@@ -31,11 +31,14 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         table = self.visit(ctx.tableName())
         where_condition = self.visit(ctx.condition()) if ctx.condition() else None
 
+        order_by = self.visit(ctx.orderList()) if ctx.orderList() else None
+
         return {
             "type": "SELECT",
             "columns": columns,
             "table": table,
-            "where": where_condition
+            "where": where_condition,
+            "order_by": order_by
         }
 
     # Handle SELECT * 
@@ -117,11 +120,19 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             "where": condition
         }
 
+    def visitOrderList(self, ctx: MiniSQLParser.OrderListContext):
+        return [self.visit(order) for order in ctx.orderItem()]
+
+    def visitOrderItem(self, ctx: MiniSQLParser.OrderItemContext):
+        col = ctx.columnName().getText()
+        direction = ctx.ASC().getText() if ctx.ASC() else ctx.DESC().getText() if ctx.DESC() else "ASC"
+        return (col, direction)
+
 
     def visitExpression(self, ctx: MiniSQLParser.ExpressionContext):
         if ctx.columnName():
             return ctx.columnName().getText()
-        return ctx.literal().getText().strip("'")
+        return ctx.literal().getText() 
 
     def visitComparator(self, ctx: MiniSQLParser.ComparatorContext):
         return ctx.getText()

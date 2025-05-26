@@ -11,7 +11,7 @@ statement
 
 // SELECT
 selectStmt
-    : SELECT columnList FROM tableName (WHERE condition)?
+    : SELECT columnList FROM tableName (WHERE condition)? (ORDER BY orderList)?
     ;
 
 columnList
@@ -53,6 +53,15 @@ baseCond
     : expression comparator expression  # baseCondition
     ;
 
+// ORDER BY
+orderList
+    : orderItem (',' orderItem)*
+    ;
+
+orderItem
+    : columnName (ASC | DESC)?
+    ;    
+
 expression
     : columnName
     | literal
@@ -79,6 +88,10 @@ UPDATE : 'UPDATE' ;
 SET    : 'SET' ;
 AND    : 'AND' ;
 OR     : 'OR' ;
+ORDER : 'ORDER' ;
+BY    : 'BY' ;
+ASC : 'ASC';
+DESC : 'DESC';
 
 // Tokens
 IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]* ;

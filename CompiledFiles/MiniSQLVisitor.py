@@ -79,6 +79,16 @@ class MiniSQLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MiniSQLParser#orderList.
+    def visitOrderList(self, ctx:MiniSQLParser.OrderListContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#orderItem.
+    def visitOrderItem(self, ctx:MiniSQLParser.OrderItemContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MiniSQLParser#expression.
     def visitExpression(self, ctx:MiniSQLParser.ExpressionContext):
         return self.visitChildren(ctx)

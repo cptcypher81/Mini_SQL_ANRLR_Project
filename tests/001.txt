@@ -1,1 +1,1 @@
-UPDATE students SET final_mark = 95 WHERE name = 'Linh Tran';
+SELECT name, final_mark FROM students ORDER BY final_mark DESC;

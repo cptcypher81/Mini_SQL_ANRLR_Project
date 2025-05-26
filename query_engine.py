@@ -22,10 +22,8 @@ def evaluate_condition(row, condition):
 
         # Normalize value types
         if isinstance(right, str):
-            # Remove quotes if present
             if right.startswith("'") and right.endswith("'"):
                 right = right[1:-1]
-            # Convert to number if possible
             if right.isdigit():
                 right = int(right)
             elif right.replace('.', '', 1).isdigit():
@@ -59,6 +57,25 @@ def run_query(query):
     if query['type'] == 'SELECT':
         if query['where']:
             table_data = [row for row in table_data if evaluate_condition(row, query['where'])]
+
+        if 'order_by' in query and query['order_by']:
+            def normalize(val):
+                if isinstance(val, str):
+                    if val.isdigit():
+                        return int(val)
+                    try:
+                        return float(val)
+                    except ValueError:
+                        return val
+                return val
+
+            for col, direction in reversed(query['order_by']):
+                table_data.sort(
+                    key=lambda row: normalize(row.get(col, None)),
+                    reverse=(direction.upper() == "DESC")
+                )
+
+
         if query['columns'] == '*':
             return table_data
         else:
