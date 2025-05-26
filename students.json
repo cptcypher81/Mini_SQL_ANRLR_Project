@@ -15,7 +15,7 @@
     "student_id": "S003",
     "name": "Charlie Le",
     "age": 19,
-    "final_mark": 92
+    "final_mark": 95
   },
   {
     "student_id": "S004",
@@ -28,5 +28,11 @@
     "name": "Evan Pham",
     "age": 23,
     "final_mark": 74
+  },
+  {
+    "student_id": "S006",
+    "name": "Linh Tran",
+    "age": "21",
+    "final_mark": "95"
   }
 ]

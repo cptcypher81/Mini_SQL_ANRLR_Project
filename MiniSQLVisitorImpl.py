@@ -13,7 +13,15 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         return results[0] if results else None
 
     def visitStatement(self, ctx: MiniSQLParser.StatementContext):
-        return self.visit(ctx.selectStmt())
+        if ctx.selectStmt():
+            return self.visit(ctx.selectStmt()) 
+        elif ctx.insertStmt():
+            return self.visit(ctx.insertStmt())
+        elif ctx.deleteStmt():
+            return self.visit(ctx.deleteStmt())
+        elif ctx.updateStmt():
+            return self.visit(ctx.updateStmt())
+
 
     def visitSelectStmt(self, ctx: MiniSQLParser.SelectStmtContext):
         print("Visiting selectStmt")
@@ -71,11 +79,49 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             "op": op,
             "right": right
         }
+    
+    def visitInsertStmt(self, ctx: MiniSQLParser.InsertStmtContext):
+        table = ctx.tableName().getText()
+        columns = [col.getText() for col in ctx.columnName()]
+        values = [lit.getText().strip("'") for lit in ctx.literal()]
+        return {
+            "type": "INSERT",
+            "table": table,
+            "columns": columns,
+            "values": values
+        }
+
+    def visitDeleteStmt(self, ctx: MiniSQLParser.DeleteStmtContext):
+        table = ctx.tableName().getText()
+        condition = self.visit(ctx.condition()) if ctx.condition() else None
+        return {
+            "type": "DELETE",
+            "table": table,
+            "where": condition
+        }
+
+    def visitUpdateStmt(self, ctx: MiniSQLParser.UpdateStmtContext):
+        table = ctx.tableName().getText()
+        assignments = []
+
+        for assign in ctx.assignment():
+            column = assign.columnName().getText()
+            value = assign.literal().getText().strip("'")
+            assignments.append((column, value))
+
+        condition = self.visit(ctx.condition()) if ctx.condition() else None
+        return {
+            "type": "UPDATE",
+            "table": table,
+            "assignments": assignments,
+            "where": condition
+        }
+
 
     def visitExpression(self, ctx: MiniSQLParser.ExpressionContext):
         if ctx.columnName():
             return ctx.columnName().getText()
-        return ctx.literal().getText()
+        return ctx.literal().getText().strip("'")
 
     def visitComparator(self, ctx: MiniSQLParser.ComparatorContext):
         return ctx.getText()

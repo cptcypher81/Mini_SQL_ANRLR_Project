@@ -34,6 +34,26 @@ class MiniSQLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MiniSQLParser#insertStmt.
+    def visitInsertStmt(self, ctx:MiniSQLParser.InsertStmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#deleteStmt.
+    def visitDeleteStmt(self, ctx:MiniSQLParser.DeleteStmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#updateStmt.
+    def visitUpdateStmt(self, ctx:MiniSQLParser.UpdateStmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#assignment.
+    def visitAssignment(self, ctx:MiniSQLParser.AssignmentContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MiniSQLParser#orCondition.
     def visitOrCondition(self, ctx:MiniSQLParser.OrConditionContext):
         return self.visitChildren(ctx)

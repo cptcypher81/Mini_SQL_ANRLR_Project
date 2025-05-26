@@ -1,1 +1,1 @@
-SELECT name, final_mark FROM students WHERE age >= 20 OR final_mark > 70;
+UPDATE students SET final_mark = 95 WHERE name = 'Linh Tran';

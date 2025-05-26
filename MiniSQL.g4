@@ -2,15 +2,43 @@ grammar MiniSQL;
 
 program : statement+ EOF ;
 
-statement : selectStmt ';' ;
+statement
+    : selectStmt ';'
+    | insertStmt ';'
+    | deleteStmt ';'
+    | updateStmt ';'
+    ;
 
-selectStmt: SELECT columnList FROM tableName (WHERE condition)? ;
+// SELECT
+selectStmt
+    : SELECT columnList FROM tableName (WHERE condition)?
+    ;
 
 columnList
     : '*'                             # allColumns
     | columnName (',' columnName)*   # specificColumns
     ;
 
+// INSERT
+insertStmt
+    : INSERT INTO tableName '(' columnName (',' columnName)* ')' VALUES '(' literal (',' literal)* ')'
+    ;
+
+// DELETE
+deleteStmt
+    : DELETE FROM tableName (WHERE condition)?
+    ;
+
+// UPDATE
+updateStmt
+    : UPDATE tableName SET assignment (',' assignment)* (WHERE condition)?
+    ;
+
+assignment
+    : columnName '=' literal
+    ;
+
+// WHERE condition
 condition
     : condition OR andCond           # orCondition
     | andCond                        # singleAnd
@@ -25,18 +53,30 @@ baseCond
     : expression comparator expression  # baseCondition
     ;
 
-expression: columnName | literal ;
+expression
+    : columnName
+    | literal
+    ;
 
-comparator: '=' | '!=' | '<' | '<=' | '>' | '>=' ;
+comparator
+    : '=' | '!=' | '<' | '<=' | '>' | '>='
+    ;
 
+// Terminals
 columnName : IDENTIFIER ;
 tableName  : IDENTIFIER ;
 literal    : STRING | NUMBER ;
 
 // Keywords
 SELECT : 'SELECT' ;
+INSERT : 'INSERT' ;
+INTO   : 'INTO' ;
+VALUES : 'VALUES' ;
+DELETE : 'DELETE' ;
 FROM   : 'FROM' ;
 WHERE  : 'WHERE' ;
+UPDATE : 'UPDATE' ;
+SET    : 'SET' ;
 AND    : 'AND' ;
 OR     : 'OR' ;
 
