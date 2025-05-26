@@ -74,7 +74,13 @@ def run_query(query):
                     key=lambda row: normalize(row.get(col, None)),
                     reverse=(direction.upper() == "DESC")
                 )
-
+        
+        if query.get("limit") is not None:
+            try:
+                limit = int(query["limit"])
+                table_data = table_data[:limit]
+            except ValueError:
+                print("Invalid LIMIT value.")
 
         if query['columns'] == '*':
             return table_data

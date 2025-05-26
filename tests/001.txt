@@ -1,1 +1,1 @@
-SELECT name, final_mark FROM students ORDER BY final_mark DESC;
+SELECT name, final_mark FROM students ORDER BY final_mark DESC LIMIT 3;

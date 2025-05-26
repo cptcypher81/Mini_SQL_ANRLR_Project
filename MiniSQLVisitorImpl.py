@@ -32,13 +32,15 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         where_condition = self.visit(ctx.condition()) if ctx.condition() else None
 
         order_by = self.visit(ctx.orderList()) if ctx.orderList() else None
+        limit = int(ctx.NUMBER().getText()) if ctx.LIMIT() else None
 
         return {
             "type": "SELECT",
             "columns": columns,
             "table": table,
             "where": where_condition,
-            "order_by": order_by
+            "order_by": order_by,
+            "limit": limit
         }
 
     # Handle SELECT * 

@@ -11,7 +11,7 @@ statement
 
 // SELECT
 selectStmt
-    : SELECT columnList FROM tableName (WHERE condition)? (ORDER BY orderList)?
+    : SELECT columnList FROM tableName (WHERE condition)? (ORDER BY orderList)? (LIMIT NUMBER)?
     ;
 
 columnList
@@ -92,6 +92,7 @@ ORDER : 'ORDER' ;
 BY    : 'BY' ;
 ASC : 'ASC';
 DESC : 'DESC';
+LIMIT: 'LIMIT';
 
 // Tokens
 IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]* ;
