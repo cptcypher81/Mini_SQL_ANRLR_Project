@@ -1,0 +1,21 @@
+SELECT name, final_mark FROM students WHERE name = 'Linh Tran';
+
+SELECT * FROM students WHERE final_mark > 80;
+
+INSERT INTO students (student_id, name, age, final_mark) VALUES ('S007', 'Tuan Anh', 24, 88);
+SELECT * FROM students WHERE student_id = 'S007';
+
+UPDATE students SET final_mark = 95 WHERE name = 'Linh Tran';
+SELECT * FROM students WHERE name = 'Linh Tran'
+
+//BETWEEN
+SELECT * FROM Students WHERE age BETWEEN 18 AND 22;
+
+//DISTINCT
+SELECT DISTINCT class_id FROM Students;
+
+//ORDER BY
+SELECT * FROM Students ORDER BY age DESC;
+
+DELETE FROM students WHERE student_id = 'S007'
+

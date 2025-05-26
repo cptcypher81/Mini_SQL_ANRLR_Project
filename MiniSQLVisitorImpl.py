@@ -1,0 +1,133 @@
+from antlr4 import *
+from CompiledFiles.MiniSQLParser import MiniSQLParser
+from CompiledFiles.MiniSQLVisitor import MiniSQLVisitor
+
+class MiniSQLVisitorImpl(MiniSQLVisitor):
+
+    def visitProgram(self, ctx: MiniSQLParser.ProgramContext):
+        results = []
+        for stmt in ctx.statement():
+            result = self.visit(stmt)
+            if result is not None:
+                results.append(result)
+        return results
+
+    def visitStatement(self, ctx: MiniSQLParser.StatementContext):
+        if ctx.selectStmt():
+            return self.visit(ctx.selectStmt()) 
+        elif ctx.insertStmt():
+            return self.visit(ctx.insertStmt())
+        elif ctx.deleteStmt():
+            return self.visit(ctx.deleteStmt())
+        elif ctx.updateStmt():
+            return self.visit(ctx.updateStmt())
+
+    def visitSelectStmt(self, ctx: MiniSQLParser.SelectStmtContext):
+        columns = self.visit(ctx.columnList())
+        table = self.visit(ctx.tableName())
+        where_condition = self.visit(ctx.condition()) if ctx.condition() else None
+
+        return {
+            "type": "SELECT",
+            "columns": columns,
+            "table": table,
+            "where": where_condition
+        }
+
+    # Handle SELECT * 
+    def visitAllColumns(self, ctx: MiniSQLParser.AllColumnsContext):
+        return "*"
+
+    # Handle SELECT name, age
+    def visitSpecificColumns(self, ctx: MiniSQLParser.SpecificColumnsContext):
+        return [col.getText() for col in ctx.columnName()]
+
+    def visitTableName(self, ctx: MiniSQLParser.TableNameContext):
+        return ctx.getText()
+
+    def visitOrCondition(self, ctx: MiniSQLParser.OrConditionContext):
+        return {
+            "type": "or",
+            "left": self.visit(ctx.condition()),
+            "right": self.visit(ctx.andCond())
+        }
+
+    def visitAndCondition(self, ctx: MiniSQLParser.AndConditionContext):
+        return {
+            "type": "and",
+            "left": self.visit(ctx.andCond()),
+            "right": self.visit(ctx.baseCond())
+        }
+
+    def visitSingleAnd(self, ctx: MiniSQLParser.SingleAndContext):
+        return self.visit(ctx.andCond())
+
+    def visitSingleBase(self, ctx: MiniSQLParser.SingleBaseContext):
+        return self.visit(ctx.baseCond())
+
+    def visitBaseCondition(self, ctx: MiniSQLParser.BaseConditionContext):
+        left = self.visit(ctx.expression(0))
+        op = self.visit(ctx.comparator())
+        right = self.visit(ctx.expression(1))
+        return {
+            "type": "condition",
+            "left": left,
+            "op": op,
+            "right": right
+        }
+
+    def convert_value(self, val):
+        try:
+            return int(val)
+        except ValueError:
+            return val
+
+    def visitInsertStmt(self, ctx: MiniSQLParser.InsertStmtContext):
+        table = ctx.tableName().getText()
+        columns = [col.getText() for col in ctx.columnName()]
+        raw_values = [lit.getText().strip("'") for lit in ctx.literal()]
+        values = [self.convert_value(v) for v in raw_values]
+        return {
+            "type": "INSERT",
+            "table": table,
+            "columns": columns,
+            "values": values,
+            "success_message": "Add successful"
+        }
+
+    def visitDeleteStmt(self, ctx: MiniSQLParser.DeleteStmtContext):
+        table = ctx.tableName().getText()
+        condition = self.visit(ctx.condition()) if ctx.condition() else None
+        return {
+            "type": "DELETE",
+            "table": table,
+            "where": condition,
+            "success_message": "Delete successful"
+        }
+
+    def visitUpdateStmt(self, ctx: MiniSQLParser.UpdateStmtContext):
+        table = ctx.tableName().getText()
+        assignments = []
+
+        for assign in ctx.assignment():
+            column = assign.columnName().getText()
+            value = assign.literal().getText().strip("'")
+            value = self.convert_value(value)
+            assignments.append((column, value))
+
+        condition = self.visit(ctx.condition()) if ctx.condition() else None
+        return {
+            "type": "UPDATE",
+            "table": table,
+            "assignments": assignments,
+            "where": condition,
+            "success_message": "Update successful"
+        }
+
+    def visitExpression(self, ctx: MiniSQLParser.ExpressionContext):
+        if ctx.columnName():
+            return ctx.columnName().getText()
+        return ctx.literal().getText().strip("'")
+
+    def visitComparator(self, ctx: MiniSQLParser.ComparatorContext):
+        return ctx.getText()

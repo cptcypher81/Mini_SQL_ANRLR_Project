@@ -1,0 +1,100 @@
+import json
+import os
+
+def load_table(table_name):
+    filename = f"{table_name}.json"
+    if not os.path.exists(filename):
+        print(f"Error: Table '{table_name}' not found (expected file: {filename})")
+        return []
+    with open(filename, 'r') as f:
+        return json.load(f)
+
+def save_table(table_name, data):
+    filename = f"{table_name}.json"
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def evaluate_condition(row, condition):
+    if condition['type'] == 'condition':
+        left = condition['left']
+        op = condition['op']
+        right = condition['right']
+
+        # Normalize value types
+        if isinstance(right, str):
+            # Remove quotes if present
+            if right.startswith("'") and right.endswith("'"):
+                right = right[1:-1]
+            # Convert to number if possible
+            if right.isdigit():
+                right = int(right)
+            elif right.replace('.', '', 1).isdigit():
+                right = float(right)
+
+        left_value = row.get(left)
+
+        if op == '=': return left_value == right
+        if op == '!=': return left_value != right
+        if op == '<': return left_value < right
+        if op == '<=': return left_value <= right
+        if op == '>': return left_value > right
+        if op == '>=': return left_value >= right
+        return False
+
+    elif condition['type'] == 'and':
+        return evaluate_condition(row, condition['left']) and evaluate_condition(row, condition['right'])
+    elif condition['type'] == 'or':
+        return evaluate_condition(row, condition['left']) or evaluate_condition(row, condition['right'])
+
+    return False
+
+def run_query(query):
+    table_name = query.get("table")
+    if not table_name:
+        print("No table specified.")
+        return []
+
+    table_data = load_table(table_name)
+
+    if query['type'] == 'SELECT':
+        if query['where']:
+            table_data = [row for row in table_data if evaluate_condition(row, query['where'])]
+        if query['columns'] == '*':
+            return table_data
+        else:
+            return [{col: row.get(col, None) for col in query['columns']} for row in table_data]
+
+    elif query['type'] == 'INSERT':
+        new_row = dict(zip(query['columns'], query['values']))
+        table_data.append(new_row)
+        save_table(table_name, table_data)
+        print("Row inserted.")
+        return query.get("success_message", "Row inserted.")
+
+    elif query['type'] == 'DELETE':
+        original_count = len(table_data)
+        table_data = [row for row in table_data if not evaluate_condition(row, query['where'])]
+        save_table(table_name, table_data)
+        deleted_count = original_count - len(table_data)
+        if deleted_count > 0:
+            return query.get("success_message", f"{deleted_count} row(s) deleted.")
+        else:
+            return "No rows deleted."
+
+    elif query["type"] == "UPDATE":
+        table = query["table"]
+        data = load_table(table)
+        updated_count = 0
+
+        for row in data:
+            if evaluate_condition(row, query["where"]):
+                for key, value in query["assignments"]:
+                    row[key] = value
+                updated_count += 1
+
+        save_table(table, data)
+        return query.get("success_message", f"{updated_count} row(s) updated.")
+
+    else:
+        print(f"Unsupported query type: {query['type']}")
+        return []

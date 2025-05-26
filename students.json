@@ -1,0 +1,44 @@
+[
+  {
+    "student_id": "S001",
+    "name": "Alice Nguyen",
+    "age": 20,
+    "final_mark": 95
+  },
+  {
+    "student_id": "S002",
+    "name": "Bob Tran",
+    "age": 22,
+    "final_mark": 78
+  },
+  {
+    "student_id": "S003",
+    "name": "Charlie Le",
+    "age": 19,
+    "final_mark": 95
+  },
+  {
+    "student_id": "S004",
+    "name": "Diana Vo",
+    "age": 21,
+    "final_mark": 68
+  },
+  {
+    "student_id": "S005",
+    "name": "Evan Pham",
+    "age": 23,
+    "final_mark": 74
+  },
+  {
+    "student_id": "S006",
+    "name": "Linh Tran",
+    "age": 21,
+    "final_mark": 95
+  },
+  {
+    "student_id": "S009",
+    "name": "Anh Bui",
+    "age": 22,
+    "final_mark": 80
+  }
+]
