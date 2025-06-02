@@ -39,10 +39,29 @@ def evaluate_condition(row, condition):
         if op == '>=': return left_value >= right
         return False
 
+    elif condition['type'] == 'between':
+        field = condition['field']
+        val = row.get(field)
+        lower = condition['lower']
+        upper = condition['upper']
+
+        try:
+            val = float(val)
+            lower = float(lower)
+            upper = float(upper)
+        except:
+            pass  # Keep string comparison fallback
+
+        return lower <= val <= upper
+
     elif condition['type'] == 'and':
         return evaluate_condition(row, condition['left']) and evaluate_condition(row, condition['right'])
+
     elif condition['type'] == 'or':
         return evaluate_condition(row, condition['left']) or evaluate_condition(row, condition['right'])
+    
+    elif condition['type'] == 'not':
+        return not evaluate_condition(row, condition['condition'])
 
     return False
 

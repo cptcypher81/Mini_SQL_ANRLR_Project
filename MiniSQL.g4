@@ -50,7 +50,9 @@ andCond
     ;
 
 baseCond
-    : expression comparator expression  # baseCondition
+    : NOT baseCond                       # notCondition
+    | expression comparator expression  # baseCondition
+    | expression BETWEEN expression AND expression  # betweenCondition
     ;
 
 // ORDER BY
@@ -98,6 +100,8 @@ ASC : 'ASC';
 DESC : 'DESC';
 LIMIT: 'LIMIT';
 DISTINCT : 'DISTINCT';
+BETWEEN : 'BETWEEN' ;
+NOT : 'NOT' ;
 
 // Tokens
 IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]* ;

@@ -131,6 +131,23 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         col = ctx.columnName().getText()
         direction = ctx.ASC().getText() if ctx.ASC() else ctx.DESC().getText() if ctx.DESC() else "ASC"
         return (col, direction)
+    
+    def visitBetweenCondition(self, ctx: MiniSQLParser.BetweenConditionContext):
+        field = self.visit(ctx.expression(0))
+        lower = self.visit(ctx.expression(1))
+        upper = self.visit(ctx.expression(2))
+        return {
+            "type": "between",
+            "field": field,
+            "lower": lower,
+            "upper": upper
+    }
+
+    def visitNotCondition(self, ctx: MiniSQLParser.NotConditionContext):
+        return {
+            "type": "not",
+            "condition": self.visit(ctx.baseCond())
+    }
 
 
     def visitExpression(self, ctx: MiniSQLParser.ExpressionContext):
