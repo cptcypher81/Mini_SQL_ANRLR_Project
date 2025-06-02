@@ -77,6 +77,20 @@ def run_query(query):
         if query['where']:
             table_data = [row for row in table_data if evaluate_condition(row, query['where'])]
 
+        group_by = query.get("group_by")
+        if group_by:
+            grouped_data = {}
+            for row in table_data:
+                # Use a tuple of group-by column values as the key
+                key = tuple(row.get(col) for col in group_by)
+                if key not in grouped_data:
+                    grouped_data[key] = []
+                grouped_data[key].append(row)
+        
+            # Simplest form: just return the first row from each group
+            table_data = [group[0] for group in grouped_data.values()]
+
+
         if 'order_by' in query and query['order_by']:
             def normalize(val):
                 if isinstance(val, str):
@@ -101,10 +115,44 @@ def run_query(query):
             except ValueError:
                 print("Invalid LIMIT value.")
 
-        if query['columns'] == '*':
+        columns = query['columns']
+
+        # Check if it's a pure '*' selection
+        if columns == '*':
             selected_data = table_data
+
+        # Check for aggregation
+        elif any(isinstance(col, dict) and 'agg_func' in col for col in columns):
+            agg_result = {}
+            for col in columns:
+                if isinstance(col, dict):
+                    func = col['agg_func'].upper()
+                    field = col['column']
+                    values = [row.get(field) for row in table_data if row.get(field) is not None]
+
+                    try:
+                        values = list(map(float, values))
+                    except:
+                        values = []
+
+                    if func == "COUNT":
+                        agg_result[f"COUNT({field})"] = len(values)
+                    elif func == "AVG":
+                        agg_result[f"AVG({field})"] = round(sum(values) / len(values), 2) if values else None
+                    elif func == 'SUM':
+                        agg_result[f"SUM({field})"] = sum(values) if values else None
+                    elif func == 'MIN':
+                        agg_result[f"MIN({field})"] = min(values) if values else None
+                    elif func == 'MAX':
+                        agg_result[f"MAX({field})"] = max(values) if values else None
+
+                else:
+                    agg_result[col] = None
+            selected_data = [agg_result]  # One row result
+
+        # Regular column selection
         else:
-            selected_data = [{col: row.get(col, None) for col in query['columns']} for row in table_data]
+            selected_data = [{col: row.get(col, None) for col in columns} for row in table_data]
 
         # Apply DISTINCT if specified
         if query.get("distinct"):

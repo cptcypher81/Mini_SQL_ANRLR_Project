@@ -11,13 +11,30 @@ statement
 
 // SELECT
 selectStmt
-    : SELECT distinctModifier? columnList FROM tableName (WHERE condition)? (ORDER BY orderList)? (LIMIT NUMBER)?
+    : SELECT distinctModifier? columnList 
+      FROM tableName 
+      (WHERE condition)? 
+      (groupByClause)? 
+      (ORDER BY orderList)? 
+      (LIMIT NUMBER)?
     ;
+
 
 columnList
     : '*'                             # allColumns
-    | columnName (',' columnName)*   # specificColumns
+    | columnExpr (',' columnExpr)*   # specificColumns
     ;
+
+columnExpr
+    : aggregateFunction               # aggFuncExpr
+    | columnName                      # simpleColumn
+    ;
+
+aggregateFunction
+    : ('COUNT' | 'AVG' | 'SUM' | 'MIN' | 'MAX') '(' columnName ')'
+    ;
+
+
 
 // INSERT
 insertStmt
@@ -68,6 +85,10 @@ distinctModifier
     : DISTINCT
     ;
 
+groupByClause
+    : GROUP BY columnName (',' columnName)*
+    ;
+
 expression
     : columnName
     | literal
@@ -95,6 +116,7 @@ SET    : 'SET' ;
 AND    : 'AND' ;
 OR     : 'OR' ;
 ORDER : 'ORDER' ;
+GROUP : 'GROUP' ;
 BY    : 'BY' ;
 ASC : 'ASC';
 DESC : 'DESC';
@@ -102,6 +124,8 @@ LIMIT: 'LIMIT';
 DISTINCT : 'DISTINCT';
 BETWEEN : 'BETWEEN' ;
 NOT : 'NOT' ;
+COUNT : 'COUNT';
+AVG   : 'AVG';
 
 // Tokens
 IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]* ;

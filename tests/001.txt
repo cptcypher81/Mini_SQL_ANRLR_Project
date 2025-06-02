@@ -1,1 +1,1 @@
-SELECT name, age FROM students WHERE NOT age BETWEEN 20 AND 22;
+SELECT MIN(age), MAX(age) FROM students;

@@ -35,6 +35,8 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         order_by = self.visit(ctx.orderList()) if ctx.orderList() else None
         limit = int(ctx.NUMBER().getText()) if ctx.LIMIT() else None
 
+        group_by = self.visit(ctx.groupByClause()) if ctx.groupByClause() else None
+
         return {
             "type": "SELECT",
             "distinct": is_distinct,
@@ -42,7 +44,8 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             "table": table,
             "where": where_condition,
             "order_by": order_by,
-            "limit": limit
+            "limit": limit,
+            "group_by": group_by
         }
 
     # Handle SELECT * 
@@ -50,8 +53,20 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         return "*"
 
     # Handle SELECT name, age
-    def visitSpecificColumns(self, ctx: MiniSQLParser.SpecificColumnsContext):
-        return [col.getText() for col in ctx.columnName()]
+    def visitSpecificColumns(self, ctx):
+        return [self.visit(col) for col in ctx.columnExpr()]
+
+    def visitColumnExpr(self, ctx):
+        if ctx.columnName():
+            return ctx.columnName().getText()
+        return self.visit(ctx.aggregateFunction())
+
+    def visitAggregateFunction(self, ctx):
+        return {
+            "agg_func": ctx.getChild(0).getText().upper(),  # COUNT or AVG
+            "column": ctx.columnName().getText()
+    }
+
 
     def visitTableName(self, ctx: MiniSQLParser.TableNameContext):
         return ctx.getText()
@@ -149,6 +164,8 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             "condition": self.visit(ctx.baseCond())
     }
 
+    def visitGroupByClause(self, ctx: MiniSQLParser.GroupByClauseContext):
+        return [col.getText() for col in ctx.columnName()]
 
     def visitExpression(self, ctx: MiniSQLParser.ExpressionContext):
         if ctx.columnName():

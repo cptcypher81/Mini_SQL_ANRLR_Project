@@ -34,6 +34,21 @@ class MiniSQLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MiniSQLParser#aggFuncExpr.
+    def visitAggFuncExpr(self, ctx:MiniSQLParser.AggFuncExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#simpleColumn.
+    def visitSimpleColumn(self, ctx:MiniSQLParser.SimpleColumnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#aggregateFunction.
+    def visitAggregateFunction(self, ctx:MiniSQLParser.AggregateFunctionContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MiniSQLParser#insertStmt.
     def visitInsertStmt(self, ctx:MiniSQLParser.InsertStmtContext):
         return self.visitChildren(ctx)
@@ -101,6 +116,11 @@ class MiniSQLVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MiniSQLParser#distinctModifier.
     def visitDistinctModifier(self, ctx:MiniSQLParser.DistinctModifierContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniSQLParser#groupByClause.
+    def visitGroupByClause(self, ctx:MiniSQLParser.GroupByClauseContext):
         return self.visitChildren(ctx)
 
 
