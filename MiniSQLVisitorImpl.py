@@ -10,7 +10,7 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             result = self.visit(stmt)
             if result is not None:
                 results.append(result)
-        return results[0] if results else None
+        return results
 
     def visitStatement(self, ctx: MiniSQLParser.StatementContext):
         if ctx.selectStmt():
@@ -25,6 +25,7 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
 
     def visitSelectStmt(self, ctx: MiniSQLParser.SelectStmtContext):
         print("Visiting selectStmt")
+        is_distinct = ctx.distinctModifier() is not None  # check if DISTINCT exists
         columns = self.visit(ctx.columnList())
         print("Columns parsed:", columns)
 
@@ -36,6 +37,7 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
 
         return {
             "type": "SELECT",
+            "distinct": is_distinct,
             "columns": columns,
             "table": table,
             "where": where_condition,

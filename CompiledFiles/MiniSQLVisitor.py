@@ -89,6 +89,11 @@ class MiniSQLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MiniSQLParser#distinctModifier.
+    def visitDistinctModifier(self, ctx:MiniSQLParser.DistinctModifierContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MiniSQLParser#expression.
     def visitExpression(self, ctx:MiniSQLParser.ExpressionContext):
         return self.visitChildren(ctx)

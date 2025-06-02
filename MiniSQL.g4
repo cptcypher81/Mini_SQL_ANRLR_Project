@@ -11,7 +11,7 @@ statement
 
 // SELECT
 selectStmt
-    : SELECT columnList FROM tableName (WHERE condition)? (ORDER BY orderList)? (LIMIT NUMBER)?
+    : SELECT distinctModifier? columnList FROM tableName (WHERE condition)? (ORDER BY orderList)? (LIMIT NUMBER)?
     ;
 
 columnList
@@ -62,6 +62,10 @@ orderItem
     : columnName (ASC | DESC)?
     ;    
 
+distinctModifier
+    : DISTINCT
+    ;
+
 expression
     : columnName
     | literal
@@ -93,6 +97,7 @@ BY    : 'BY' ;
 ASC : 'ASC';
 DESC : 'DESC';
 LIMIT: 'LIMIT';
+DISTINCT : 'DISTINCT';
 
 // Tokens
 IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]* ;

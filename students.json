@@ -34,5 +34,89 @@
     "name": "Linh Tran",
     "age": "21",
     "final_mark": "95"
+  },
+  {
+    "student_id": "S007",
+    "name": "Fiona Mai",
+    "age": "20",
+    "final_mark": "85"
+  },
+  {
+    "student_id": "S008",
+    "name": "George Lam",
+    "age": "22",
+    "final_mark": "74"
+  },
+  {
+    "student_id": "S009",
+    "name": "Hannah Bui",
+    "age": "20",
+    "final_mark": "91"
+  },
+  {
+    "student_id": "S010",
+    "name": "Ivan Do",
+    "age": "21",
+    "final_mark": "88"
+  },
+  {
+    "student_id": "S011",
+    "name": "Jenny Vu",
+    "age": "22",
+    "final_mark": "85"
+  },
+  {
+    "student_id": "S012",
+    "name": "Kevin Phan",
+    "age": "23",
+    "final_mark": "95"
+  },
+  {
+    "student_id": "S013",
+    "name": "Linda Ngo",
+    "age": "20",
+    "final_mark": "78"
+  },
+  {
+    "student_id": "S014",
+    "name": "Mike Tran",
+    "age": "21",
+    "final_mark": "74"
+  },
+  {
+    "student_id": "S015",
+    "name": "Nancy Le",
+    "age": "22",
+    "final_mark": "85"
+  },
+  {
+    "student_id": "S016",
+    "name": "Oscar Nguyen",
+    "age": "23",
+    "final_mark": "88"
+  },
+  {
+    "student_id": "S017",
+    "name": "Paul Ho",
+    "age": "20",
+    "final_mark": "78"
+  },
+  {
+    "student_id": "S018",
+    "name": "Quinn Dao",
+    "age": "21",
+    "final_mark": "91"
+  },
+  {
+    "student_id": "S019",
+    "name": "Rachel Pham",
+    "age": "22",
+    "final_mark": "85"
+  },
+  {
+    "student_id": "S020",
+    "name": "Steve Vo",
+    "age": "23",
+    "final_mark": "68"
   }
 ]

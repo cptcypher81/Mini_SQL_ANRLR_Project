@@ -60,14 +60,20 @@ def runTest():
     tree = parser.program()
 
     visitor = MiniSQLVisitorImpl()
-    query = visitor.visit(tree)
-    print("Visitor result:", query)
+    queries = visitor.visit(tree)
+    print("Visitor result:", queries)
 
-    if query:
+    if not isinstance(queries, list):
+        queries = [queries]
+
+    for idx, query in enumerate(queries):
+        print(f"\nExecuting Query {idx + 1}:")
         result = run_query(query)
-        print("Query Results:")
-        for row in result:
-            print(row)
+        if result:
+            print("Query Results:")
+            for row in result:
+                print(row)
+
 
     print(tree.toStringTree(recog=parser))
     print("Input accepted")

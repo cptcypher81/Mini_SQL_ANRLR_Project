@@ -83,9 +83,22 @@ def run_query(query):
                 print("Invalid LIMIT value.")
 
         if query['columns'] == '*':
-            return table_data
+            selected_data = table_data
         else:
-            return [{col: row.get(col, None) for col in query['columns']} for row in table_data]
+            selected_data = [{col: row.get(col, None) for col in query['columns']} for row in table_data]
+
+        # Apply DISTINCT if specified
+        if query.get("distinct"):
+            seen = set()
+            distinct_rows = []
+            for row in selected_data:
+                normalized = tuple(str(v) for v in row.values())
+                if normalized not in seen:
+                    seen.add(normalized)
+                    distinct_rows.append(row)
+            selected_data = distinct_rows
+        
+        return selected_data
 
     elif query['type'] == 'INSERT':
         new_row = dict(zip(query['columns'], query['values']))
