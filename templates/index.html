@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MiniSQL Web</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="https://hcmiu.edu.vn/" target="_blank">
+        <img src="/static/LogoHCMIU.png" alt="Logo" class="logo">
+      </a>
+      <span class="project-name">Mini SQL Database-ATNLR Systems </span>
+    </div>
+    <ul class="navbar-menu">
+      <li><a href="/">Home</a></li>
+      <li><a href="#" onclick="showOverlay()">About</a></li>
+      <li><a href="#">Report</a></li>
+      <li><a href="#">Demo</a></li>
+    </ul>
+  </nav>
+
+  <!-- About Overlay -->
+  <div class="overlay" id="aboutOverlay">
+    <div class="overlay-content">
+      <div class="flex-container">
+        <div class="student-info">
+          <img src="/static/LogoHCMIU.png" alt="Logo" class="logo">
+          <h2>Nguyễn Văn A</h2>
+          <p>MSSV: 12345678</p>
+        </div>
+        <div class="student-info">
+          <img src="/static/LogoHCMIU.png" alt="Logo" class="logo">
+          <h2>Nguyễn Văn B</h2>
+          <p>MSSV: 87654321</p>
+        </div>
+        <div class="student-info">
+          <img src="/static/LogoHCMIU.png" alt="Logo" class="logo">
+          <h2>Nguyễn Văn C</h2>
+          <p>MSSV: 11223344</p>
+        </div>
+      </div>
+      <button class="close-btn" onclick="hideOverlay()">Đóng</button>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('aboutOverlay');
+
+    function showOverlay() {
+      overlay.style.visibility = 'visible';
+      overlay.classList.add('show');
+    }
+
+    function hideOverlay() {
+      overlay.classList.remove('show');
+      const onTransitionEnd = (e) => {
+        if (e.propertyName === 'opacity') {
+          overlay.style.visibility = 'hidden';
+          overlay.removeEventListener('transitionend', onTransitionEnd);
+        }
+      };
+      overlay.addEventListener('transitionend', onTransitionEnd);
+    }
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        hideOverlay();
+      }
+    });
+  </script>
+
+  <h1>MiniSQL Query Engine</h1>
+  <div class="wrapper">
+    <div class="query-form">
+      <form id="queryForm">
+        <textarea id="queryInput" name="query" rows="6" cols="60" placeholder="Enter your MiniSQL command here..."></textarea><br>
+        <button type="submit">Run Query</button>
+      </form>
+
+      <h2>Result</h2>
+      <pre id="resultArea">Result will appear here...</pre>
+    </div>
+
+    <div class="suggestions-box">
+      <h3>Suggested Commands</h3>
+      <ul>
+        <li><code>SELECT * FROM students;</code></li>
+        <li><code>SELECT * FROM students ORDER BY name ASC;</code></li>
+        <li><code>INSERT INTO students (student_id, name, age, final_mark) VALUES ('S007', 'Tuan Anh', 24, 88); SELECT * FROM students WHERE student_id = 'S007';</code></li>
+        <li><code>DELETE FROM students WHERE student_id = 'S007'</code></li>
+        <li><code>UPDATE students SET final_mark = 95 WHERE name = 'Linh Tran'; SELECT * FROM students WHERE name = 'Linh Tran'</code></li>
+        <li><code>SELECT * FROM students WHERE final_mark > 80;</code></li>
+        <li><code>INSERT INTO students (student_id, name, age, final_mark) VALUES ('S007', 'Tuan Anh', 24, 88); SELECT * FROM students </code></li>
+        <li><code>SELECT DISTINCT name FROM students;</code></li>
+        <li><code>SELECT name, AVG(final_mark) FROM students GROUP BY name;</code></li>
+        <li><code>SELECT * FROM students WHERE age BETWEEN 20 AND 22;</code></li>
+        <li><code>SELECT * FROM students WHERE final_mark > 80 AND age < 22;</code></li>
+        <li><code>SELECT * FROM students WHERE final_mark > 80 OR age < 20;</code></li>
+        <li><code>SELECT * FROM students WHERE NOT final_mark < 70;</code></li>
+        <li><code>SELECT * FROM students LIMIT 5;</code></li>
+        <li><code>SELECT COUNT(student_id) FROM students WHERE final_mark >= 80;</code></li>
+        <li><code>UPDATE students SET age = 23 WHERE student_id = 'S006'; SELECT * FROM students WHERE student_id = 'S006'</code></li>
+        <li><code>DELETE FROM students WHERE final_mark < 70;</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("queryForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const query = document.getElementById("queryInput").value;
+      const response = await fetch("/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query })
+      });
+      const data = await response.json();
+      document.getElementById("resultArea").textContent = JSON.stringify(data, null, 2);
+    });
+
+    document.querySelectorAll(".suggestions-box li").forEach(item => {
+      item.addEventListener("click", () => {
+        document.getElementById("queryInput").value = item.textContent;
+      });
+    });
+  </script>
+</body>
+</html>

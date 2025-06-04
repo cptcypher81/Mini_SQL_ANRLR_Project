@@ -22,19 +22,13 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
         elif ctx.updateStmt():
             return self.visit(ctx.updateStmt())
 
-
     def visitSelectStmt(self, ctx: MiniSQLParser.SelectStmtContext):
-        print("Visiting selectStmt")
-        is_distinct = ctx.distinctModifier() is not None  # check if DISTINCT exists
+        is_distinct = ctx.distinctModifier() is not None
         columns = self.visit(ctx.columnList())
-        print("Columns parsed:", columns)
-
         table = self.visit(ctx.tableName())
         where_condition = self.visit(ctx.condition()) if ctx.condition() else None
-
         order_by = self.visit(ctx.orderList()) if ctx.orderList() else None
         limit = int(ctx.NUMBER().getText()) if ctx.LIMIT() else None
-
         group_by = self.visit(ctx.groupByClause()) if ctx.groupByClause() else None
 
         return {
@@ -48,41 +42,42 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             "group_by": group_by
         }
 
-    # Handle SELECT * 
     def visitAllColumns(self, ctx: MiniSQLParser.AllColumnsContext):
         return "*"
 
-    # Handle SELECT name, age
-    def visitSpecificColumns(self, ctx):
+    def visitSpecificColumns(self, ctx: MiniSQLParser.SpecificColumnsContext):
         return [self.visit(col) for col in ctx.columnExpr()]
 
-    def visitColumnExpr(self, ctx):
+    def visitColumnExpr(self, ctx: MiniSQLParser.ColumnExprContext):
         if ctx.columnName():
             return ctx.columnName().getText()
         return self.visit(ctx.aggregateFunction())
 
-    def visitAggregateFunction(self, ctx):
+    def visitAggregateFunction(self, ctx: MiniSQLParser.AggregateFunctionContext):
         return {
-            "agg_func": ctx.getChild(0).getText().upper(),  # COUNT or AVG
+            "agg_func": ctx.getChild(0).getText().upper(),
             "column": ctx.columnName().getText()
-    }
-
+        }
 
     def visitTableName(self, ctx: MiniSQLParser.TableNameContext):
         return ctx.getText()
 
     def visitOrCondition(self, ctx: MiniSQLParser.OrConditionContext):
+        left = self.visit(ctx.condition()) if ctx.condition() else None
+        right = self.visit(ctx.andCond()) if ctx.andCond() else None
         return {
             "type": "or",
-            "left": self.visit(ctx.condition()),
-            "right": self.visit(ctx.andCond())
+            "left": left,
+            "right": right
         }
 
     def visitAndCondition(self, ctx: MiniSQLParser.AndConditionContext):
+        left = self.visit(ctx.andCond()) if ctx.andCond() else None
+        right = self.visit(ctx.baseCond()) if ctx.baseCond() else None
         return {
             "type": "and",
-            "left": self.visit(ctx.andCond()),
-            "right": self.visit(ctx.baseCond())
+            "left": left,
+            "right": right
         }
 
     def visitSingleAnd(self, ctx: MiniSQLParser.SingleAndContext):
@@ -125,12 +120,10 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
     def visitUpdateStmt(self, ctx: MiniSQLParser.UpdateStmtContext):
         table = ctx.tableName().getText()
         assignments = []
-
         for assign in ctx.assignment():
             column = assign.columnName().getText()
             value = assign.literal().getText().strip("'")
             assignments.append((column, value))
-
         condition = self.visit(ctx.condition()) if ctx.condition() else None
         return {
             "type": "UPDATE",
@@ -144,7 +137,11 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
 
     def visitOrderItem(self, ctx: MiniSQLParser.OrderItemContext):
         col = ctx.columnName().getText()
-        direction = ctx.ASC().getText() if ctx.ASC() else ctx.DESC().getText() if ctx.DESC() else "ASC"
+        direction = "ASC"
+        if ctx.ASC():
+            direction = ctx.ASC().getText()
+        elif ctx.DESC():
+            direction = ctx.DESC().getText()
         return (col, direction)
     
     def visitBetweenCondition(self, ctx: MiniSQLParser.BetweenConditionContext):
@@ -156,13 +153,13 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
             "field": field,
             "lower": lower,
             "upper": upper
-    }
+        }
 
     def visitNotCondition(self, ctx: MiniSQLParser.NotConditionContext):
         return {
             "type": "not",
             "condition": self.visit(ctx.baseCond())
-    }
+        }
 
     def visitGroupByClause(self, ctx: MiniSQLParser.GroupByClauseContext):
         return [col.getText() for col in ctx.columnName()]
@@ -170,7 +167,7 @@ class MiniSQLVisitorImpl(MiniSQLVisitor):
     def visitExpression(self, ctx: MiniSQLParser.ExpressionContext):
         if ctx.columnName():
             return ctx.columnName().getText()
-        return ctx.literal().getText() 
+        return ctx.literal().getText()
 
     def visitComparator(self, ctx: MiniSQLParser.ComparatorContext):
         return ctx.getText()
