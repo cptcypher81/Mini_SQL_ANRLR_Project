@@ -6,34 +6,16 @@
     "final_mark": 85
   },
   {
-    "student_id": "S002",
-    "name": "Bob Tran",
-    "age": 22,
-    "final_mark": 78
-  },
-  {
     "student_id": "S003",
     "name": "Charlie Le",
     "age": 19,
     "final_mark": 95
   },
   {
-    "student_id": "S005",
-    "name": "Evan Pham",
-    "age": 23,
-    "final_mark": 74
-  },
-  {
     "student_id": "S006",
     "name": "Linh Tran",
-    "age": 22,
-    "final_mark": 95
-  },
-  {
-    "student_id": "S008",
-    "name": "George Lam",
-    "age": 22,
-    "final_mark": 74
+    "age": 25,
+    "final_mark": 90
   },
   {
     "student_id": "S009",
@@ -60,18 +42,6 @@
     "final_mark": 95
   },
   {
-    "student_id": "S013",
-    "name": "Linda Ngo",
-    "age": 20,
-    "final_mark": 78
-  },
-  {
-    "student_id": "S014",
-    "name": "Mike Tran",
-    "age": 21,
-    "final_mark": 74
-  },
-  {
     "student_id": "S015",
     "name": "Nancy Le",
     "age": 22,
@@ -82,12 +52,6 @@
     "name": "Oscar Nguyen",
     "age": 23,
     "final_mark": 88
-  },
-  {
-    "student_id": "S017",
-    "name": "Paul Ho",
-    "age": 20,
-    "final_mark": 78
   },
   {
     "student_id": "S018",
@@ -102,20 +66,14 @@
     "final_mark": 85
   },
   {
-    "student_id": "S007",
-    "name": "Tuan Anh",
+    "student_id": "S008",
+    "name": "Anh Tuan",
     "age": 24,
-    "final_mark": 88
+    "final_mark": 92
   },
   {
-    "student_id": "S007",
-    "name": "Tuan Anh",
-    "age": 24,
-    "final_mark": 88
-  },
-  {
-    "student_id": "S007",
-    "name": "Tuan Anh",
+    "student_id": "S009",
+    "name": "Nguyen Van A",
     "age": 24,
     "final_mark": 88
   },
